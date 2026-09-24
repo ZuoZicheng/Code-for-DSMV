@@ -1,0 +1,62 @@
+seed: 1238
+paths:
+  data_dir: ./data
+  bert_dir: ./bert-large
+
+model:
+  change_detector:
+    feat_dim: 1024
+    att_dim: 1024
+    att_head: 4  # inherited graph attention heads; DSMV heads are below
+    nongt_dim: 52
+    spa_label_num: 11
+    sem_label_num: 3
+    dir_num: 2
+    pos_emb_dim: 64
+    coef_sem: 0.333
+    coef_spa: 0.333
+  dsmv:
+    d_model: 1024
+    num_layers: 2
+    image_heads: 2
+    fusion_heads: 2
+    question_length: 20  # BERT sequence length, including special tokens
+    dropout: 0.5
+    visual_ffn_hidden: 2048
+    fusion_ffn_hidden: 1024
+    conv_kernel: 9
+    conv_stride: 2
+    conv_padding: 2
+  speaker:
+    conditioning_dim: 2048
+    rnn_size: 512
+    rnn_num_layers: 2
+    word_embed_size: 300
+    drop_prob_lm: 0.5
+    seq_length: 90
+
+data:
+  dataset: rcc_dataset_mimic
+  num_workers: 0  # portable default for Windows; can be increased
+  vocab_json: vocab_mimic_VQA.json
+  h5_label_file: VQA_mimic_dataset.h5
+  h5_feature_file: cmb_bbox_di_feats.hdf5
+  splits_json: splits_mimic_VQA.json
+  questions_csv: mimic_pair_questions.csv
+  pair_order: main_reference  # feature_idx[:, 0]=after; [:, 1]=before
+  train:
+    batch_size: 64
+  val:
+    batch_size: 64
+  test:
+    batch_size: 64
+
+train:
+  max_iter: 40000  # inherited implementation choice, not specified in the paper
+  snapshot_interval: 2000
+  log_interval: 50
+  loss_alpha: 2.5
+  optim:
+    type: adam
+    lr: 0.00001
+    weight_decay: 0.0
